@@ -1,9 +1,10 @@
+import random
+import copy
+
 n = 4
 empty_list = [i for i in range(n**2)]
 flag_win = False
-
-import random
-import copy
+arr = [[0 for j in range(n)] for i in range(n)]
 
 # display the matrix
 def print_arr(_array):
@@ -89,17 +90,11 @@ def move_up(_array):
         # put back to list in matrix
         for j in range(n):
             _array[j][i] = work_list[n-1-j]
-    # if not move, then do nothing
-    if backup_array != _array:
-        randomly_add_to_array(_array)
 
 def move_right(_array):
     backup_array = copy.deepcopy(_array)
     for i in range(n):
         move_line(_array[i])
-    # if not move, then do nothing
-    if backup_array != _array:
-        randomly_add_to_array(_array)
 
 def move_down(_array):
     backup_array = copy.deepcopy(_array)
@@ -112,9 +107,6 @@ def move_down(_array):
         # put back to list in matrix
         for j in range(n):
             _array[j][i] = work_list[j]
-    # if not move, then do nothing
-    if backup_array != _array:
-        randomly_add_to_array(_array)
 
 def move_left(_array):
     backup_array = copy.deepcopy(_array)
@@ -122,29 +114,29 @@ def move_left(_array):
         _array[i].reverse()
         move_line(_array[i])
         _array[i].reverse()
-    # if not move, then do nothing
-    if backup_array != _array:
-        randomly_add_to_array(_array)
-
-arr = [[0 for j in range(n)] for i in range(n)]
 
 #initialize array(2 blocks)
 for i in range(2):
     randomly_add_to_array(arr)
 
-print 'Game Start! Up(w) Down(s) Left(a) Right(d) Exit(Enter)'
-input_direction = raw_input('move: ')
-while len(input_direction) > 0:
-    if input_direction[0] in ('W', 'w'):
+print 'Game Start! When two same number touch, they merge into one!'
+
+while True:
+    input_direction = raw_input('move Up(w) Down(s) Left(a) Right(d) Exit(Enter): ')
+    if len(input_direction) == 0:
+        break
+    backup_array = copy.deepcopy(arr)
+    if input_direction[0] in ('W', 'w', 'i'):
         move_up(arr)
-    elif input_direction[0] in ('D', 'd'):
+    elif input_direction[0] in ('D', 'd', 'l'):
         move_right(arr)
-    elif input_direction[0] in ('S', 's'):
+    elif input_direction[0] in ('S', 's', 'k'):
         move_down(arr)
-    elif input_direction[0] in ('A', 'a'):
+    elif input_direction[0] in ('A', 'a', 'j'):
         move_left(arr)
     else:
-        print 'Invalid input!' 
-    input_direction = raw_input('move Up(w) Down(s) Left(a) Right(d) Exit(Enter): ')
-
-exit()
+        print 'Invalid input!'
+        pass
+    # if not move, then do nothing
+    if backup_array != arr:
+        randomly_add_to_array(arr)
