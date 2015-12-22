@@ -1,5 +1,6 @@
 n = 4
 empty_list = [i for i in range(n**2)]
+flag_win = False
 
 import random
 import copy
@@ -20,6 +21,21 @@ def update_empty_list(_array):
                 _list.remove(row*n+col)
     return _list
 
+def compute_score(_array):
+    _score = 0
+    for i in range(n):
+        for j in range(n):
+            _score += _array[i][j]
+    return _score
+
+def can_move(_array):
+    for i in range(4):
+        for j in range(4):
+            if i < 3 and _array[i][j] == _array[i + 1][j]:
+                return True
+            if j < 3 and _array[i][j] == _array[i][j + 1]:
+                return True
+
 # add 2 or 4 to matrix
 def randomly_add_to_array(_array):
     empty_list = update_empty_list(_array)
@@ -27,15 +43,13 @@ def randomly_add_to_array(_array):
         x = random.choice(empty_list)
         empty_list.remove(x)
         _array[x/n][x%n] = random.choice([2,2,2,4])
-    else:
-        print 'Game Over!'
-        score = 0
-        for i in range(n):
-            for j in range(n):
-                score += _array[i][j]
-        print 'Your score: ', score
-        exit()
     print_arr(_array)
+    if flag_win == True:
+        print 'Congratulations! You win! Your score is ', compute_score(_array)
+    if len(empty_list) == 0:
+        if not can_move(_array):
+            print 'Game Over! Your score is ', compute_score(_array)
+            exit()
 
 def move_line(_list):
     temp_num = 0
@@ -59,67 +73,57 @@ def move_line(_list):
     if temp_num != 0:
         temp_list.insert(0, temp_num)
     _list += temp_list
+    if _list.count(2048) > 0:
+        flag_win = True
     while len(_list) < n:
         _list.insert(0, 0)
 
 def move_up(_array):
-    flag_update = False
+    backup_array = copy.deepcopy(_array)
     for i in range(n):
         work_list = []
         # select the column for bottom
         for j in range(n):
             work_list.append(_array[n-1-j][i])
-        backup_list = copy.deepcopy(work_list)
         move_line(work_list) 
-        if flag_update == False and backup_list != work_list:
-            flag_update = True
         # put back to list in matrix
         for j in range(n):
             _array[j][i] = work_list[n-1-j]
     # if not move, then do nothing
-    if flag_update:
+    if backup_array != _array:
         randomly_add_to_array(_array)
 
 def move_right(_array):
-    flag_update = False
+    backup_array = copy.deepcopy(_array)
     for i in range(n):
-        backup_list = copy.deepcopy(_array[i])
         move_line(_array[i])
-        if flag_update == False and backup_list != _array[i]:
-            flag_update = True
     # if not move, then do nothing
-    if flag_update:
+    if backup_array != _array:
         randomly_add_to_array(_array)
 
 def move_down(_array):
-    flag_update = False
+    backup_array = copy.deepcopy(_array)
     for i in range(n):
         work_list = []
         # select the column for top
         for j in range(n):
             work_list.append(_array[j][i])
-        backup_list = copy.deepcopy(work_list)
         move_line(work_list)
-        if flag_update == False and backup_list != work_list:
-            flag_update = True
         # put back to list in matrix
         for j in range(n):
             _array[j][i] = work_list[j]
     # if not move, then do nothing
-    if flag_update:
+    if backup_array != _array:
         randomly_add_to_array(_array)
 
 def move_left(_array):
-    flag_update = False
+    backup_array = copy.deepcopy(_array)
     for i in range(n):
-        backup_list = copy.deepcopy(_array[i])
         _array[i].reverse()
         move_line(_array[i])
         _array[i].reverse()
-        if flag_update == False and backup_list != _array[i]:
-            flag_update = True
     # if not move, then do nothing
-    if flag_update:
+    if backup_array != _array:
         randomly_add_to_array(_array)
 
 arr = [[0 for j in range(n)] for i in range(n)]
